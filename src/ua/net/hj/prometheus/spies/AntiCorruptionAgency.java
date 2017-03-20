@@ -1,8 +1,6 @@
 package ua.net.hj.prometheus.spies;
 
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
 import static ua.net.hj.prometheus.spies.SpiesTest.numToZeroLeadString;
 
 /**
@@ -11,15 +9,22 @@ import static ua.net.hj.prometheus.spies.SpiesTest.numToZeroLeadString;
  */
 public class AntiCorruptionAgency implements Observer
 {
-	private final ArrayList<Spy> mSpies;
-	private final ArrayList<SpyMessage> mMessages;
+	private final ArrayList<Spy> mSpies;           // Список агентов-шпионов.
+	private final ArrayList<SpyMessage> mMessages; // Полученные от агентов сообщения.
 	
+	/**
+	 * Создать новое агентство.
+	 */
 	public AntiCorruptionAgency()
 	{
 		mSpies = new ArrayList<>();
 		mMessages = new ArrayList<>();
 	}
 	
+	/**
+	 * Нанять шпионов.
+	 * @param aNumOfSpies - Количество шпионов, которых нужно нанять.
+	 */
 	public void hireSpies(int aNumOfSpies)
 	{
 		int agentsNumberingBase = mSpies.size();
@@ -32,6 +37,10 @@ public class AntiCorruptionAgency implements Observer
 		}
 	}
 	
+	/**
+	 * Внедрить агентов.
+	 * @param aConference - Съезд, на который нужно внедрить агентов.
+	 */
 	public void injectSpies(Observable aConference)
 	{
 		for (Spy spy : mSpies) {
@@ -40,22 +49,25 @@ public class AntiCorruptionAgency implements Observer
 	}
 
 	@Override
-	public void update(Observable aSpy, Object aMessage)
+	public void observerNotificationHandling(Observable aSource, Object aMessage)
 	{
-		SpyMessage aSpyMessage = (SpyMessage) aMessage;
-		boolean isExist = false;
-		for (SpyMessage currentMessage: mMessages)
+		if ((aSource instanceof Spy) && (aMessage instanceof SpyMessage))
 		{
-			if (currentMessage.equals(aSpyMessage))
+			SpyMessage aSpyMessage = (SpyMessage)aMessage;
+			boolean isExist = false;
+			for (SpyMessage currentMessage: mMessages)
 			{
-				isExist = true;
-				break;
+				if (currentMessage.equals(aSpyMessage))
+				{
+					isExist = true;
+					break;
+				}
 			}
-		}
-		if (!isExist)
-		{
-			mMessages.add(aSpyMessage);
-			System.out.println("В агенстве зарегистрировано сообщение: " + aSpyMessage.getMessage());
+			if (!isExist)
+			{
+				mMessages.add(aSpyMessage);
+				System.out.println("В агенстве зарегистрировано сообщение: " + aSpyMessage.getMessage());
+			}
 		}
 	}
 }
